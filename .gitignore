@@ -3,3 +3,10 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+
+# SQLite
+*.db-shm
+*.db-wal
+
+# JetBrains Rider
+.idea/
