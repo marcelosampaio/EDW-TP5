@@ -10,9 +10,18 @@ public class EdwDbContext(DbContextOptions<EdwDbContext> options)
     public DbSet<Evento> Eventos => Set<Evento>();
     public DbSet<Produto> Produtos => Set<Produto>();
     public DbSet<PontoDeVenda> PontosDeVenda => Set<PontoDeVenda>();
+    public DbSet<CarteiraDigital> CarteirasDigitais => Set<CarteiraDigital>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Funcionario>()
+            .ToTable("Funcionarios")
+            .HasDiscriminator<string>("TipoFuncionario")
+            .HasValue<Funcionario>("Funcionario")
+            .HasValue<Organizador>("Organizador")
+            .HasValue<OperadorCaixa>("OperadorCaixa")
+            .HasValue<Vendedor>("Vendedor");
+
         modelBuilder.Entity<Evento>().HasData(
             new Evento
             {
@@ -27,6 +36,11 @@ public class EdwDbContext(DbContextOptions<EdwDbContext> options)
             .HasOne(ponto => ponto.Evento)
             .WithMany()
             .HasForeignKey(ponto => ponto.EventoId);
+
+        modelBuilder.Entity<CarteiraDigital>()
+            .HasOne(carteira => carteira.Evento)
+            .WithMany()
+            .HasForeignKey(carteira => carteira.EventoId);
 
         modelBuilder.Entity<PontoDeVenda>()
             .HasMany(ponto => ponto.Produtos)
@@ -94,6 +108,42 @@ public class EdwDbContext(DbContextOptions<EdwDbContext> options)
             new { PontoDeVendaId = 2, ProdutoId = 2 },
             new { PontoDeVendaId = 2, ProdutoId = 3 },
             new { PontoDeVendaId = 2, ProdutoId = 4 }
+        );
+
+        modelBuilder.Entity<Vendedor>()
+            .HasOne(vendedor => vendedor.PontoDeVenda)
+            .WithMany()
+            .HasForeignKey(vendedor => vendedor.PontoDeVendaId);
+
+        modelBuilder.Entity<Organizador>().HasData(
+            new
+            {
+                FuncionarioId = 1,
+                Nome = "Carlos Mendes"
+            }
+        );
+
+        modelBuilder.Entity<OperadorCaixa>().HasData(
+            new
+            {
+                FuncionarioId = 2,
+                Nome = "Ana Souza"
+            }
+        );
+
+        modelBuilder.Entity<Vendedor>().HasData(
+            new
+            {
+                FuncionarioId = 3,
+                Nome = "João Silva",
+                PontoDeVendaId = 1
+            },
+            new
+            {
+                FuncionarioId = 4,
+                Nome = "Pedro Santos",
+                PontoDeVendaId = 2
+            }
         );
 
         base.OnModelCreating(modelBuilder);

@@ -17,6 +17,29 @@ namespace EDW_TP5.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.0");
 
+            modelBuilder.Entity("EDW_TP5.Models.CarteiraDigital", b =>
+                {
+                    b.Property<int>("CarteiraDigitalId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("EventoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("QrCode")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Saldo")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("CarteiraDigitalId");
+
+                    b.HasIndex("EventoId");
+
+                    b.ToTable("CarteirasDigitais");
+                });
+
             modelBuilder.Entity("EDW_TP5.Models.Evento", b =>
                 {
                     b.Property<int>("EventoId")
@@ -45,6 +68,30 @@ namespace EDW_TP5.Migrations
                             DataHoraInicio = new DateTime(2026, 12, 20, 18, 0, 0, 0, DateTimeKind.Unspecified),
                             Nome = "Dezembro Junino"
                         });
+                });
+
+            modelBuilder.Entity("EDW_TP5.Models.Funcionario", b =>
+                {
+                    b.Property<int>("FuncionarioId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TipoFuncionario")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("FuncionarioId");
+
+                    b.ToTable("Funcionarios", (string)null);
+
+                    b.HasDiscriminator<string>("TipoFuncionario").HasValue("Funcionario");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("EDW_TP5.Models.PontoDeVenda", b =>
@@ -162,6 +209,71 @@ namespace EDW_TP5.Migrations
                         });
                 });
 
+            modelBuilder.Entity("EDW_TP5.Models.OperadorCaixa", b =>
+                {
+                    b.HasBaseType("EDW_TP5.Models.Funcionario");
+
+                    b.HasDiscriminator().HasValue("OperadorCaixa");
+
+                    b.HasData(
+                        new
+                        {
+                            FuncionarioId = 2,
+                            Nome = "Ana Souza"
+                        });
+                });
+
+            modelBuilder.Entity("EDW_TP5.Models.Organizador", b =>
+                {
+                    b.HasBaseType("EDW_TP5.Models.Funcionario");
+
+                    b.HasDiscriminator().HasValue("Organizador");
+
+                    b.HasData(
+                        new
+                        {
+                            FuncionarioId = 1,
+                            Nome = "Carlos Mendes"
+                        });
+                });
+
+            modelBuilder.Entity("EDW_TP5.Models.Vendedor", b =>
+                {
+                    b.HasBaseType("EDW_TP5.Models.Funcionario");
+
+                    b.Property<int>("PontoDeVendaId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasIndex("PontoDeVendaId");
+
+                    b.HasDiscriminator().HasValue("Vendedor");
+
+                    b.HasData(
+                        new
+                        {
+                            FuncionarioId = 3,
+                            Nome = "João Silva",
+                            PontoDeVendaId = 1
+                        },
+                        new
+                        {
+                            FuncionarioId = 4,
+                            Nome = "Pedro Santos",
+                            PontoDeVendaId = 2
+                        });
+                });
+
+            modelBuilder.Entity("EDW_TP5.Models.CarteiraDigital", b =>
+                {
+                    b.HasOne("EDW_TP5.Models.Evento", "Evento")
+                        .WithMany()
+                        .HasForeignKey("EventoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Evento");
+                });
+
             modelBuilder.Entity("EDW_TP5.Models.PontoDeVenda", b =>
                 {
                     b.HasOne("EDW_TP5.Models.Evento", "Evento")
@@ -186,6 +298,17 @@ namespace EDW_TP5.Migrations
                         .HasForeignKey("ProdutoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("EDW_TP5.Models.Vendedor", b =>
+                {
+                    b.HasOne("EDW_TP5.Models.PontoDeVenda", "PontoDeVenda")
+                        .WithMany()
+                        .HasForeignKey("PontoDeVendaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PontoDeVenda");
                 });
 #pragma warning restore 612, 618
         }
