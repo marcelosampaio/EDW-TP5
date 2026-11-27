@@ -1,0 +1,52 @@
+@page
+@model EDW_TP5.Pages.PontosDeVenda.IndexModel
+
+@{
+    ViewData["Title"] = "Pontos de Venda";
+}
+
+<h1>Pontos de Venda</h1>
+
+@if (Model.PontosDeVenda.Count == 0)
+{
+    <p>Nenhum ponto de venda cadastrado.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Evento</th>
+            <th>Ponto de Venda</th>
+            <th>Produtos</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var ponto in Model.PontosDeVenda)
+        {
+            <tr>
+                <td>@ponto.Evento.Nome</td>
+                <td>@ponto.Nome</td>
+                <td>
+                    @if (ponto.Produtos.Count == 0)
+                    {
+                        <span>Nenhum produto associado.</span>
+                    }
+                    else
+                    {
+                        <ul>
+                            @foreach (var produto in ponto.Produtos.OrderBy(produto => produto.Nome))
+                            {
+                                <li>
+                                    @produto.Nome —
+                                    @produto.Preco.ToString("C", new System.Globalization.CultureInfo("pt-BR"))
+                                </li>
+                            }
+                        </ul>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
